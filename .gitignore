@@ -1,68 +1,68 @@
-# Prerequisites
-*.d
+#include <iostream>
+#include <string>
+#include <limits>
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+using namespace std;
 
-# Precompiled Headers
-*.gch
-*.pch
+string caesarCipher(const string& text, int shift, const string& mode) {
+    if (mode != "encrypt" && mode != "decrypt") {
+        throw invalid_argument("Mode must be 'encrypt' or 'decrypt'.");
+    }
 
-# Linker files
-*.ilk
+    if (mode == "decrypt") {
+        shift = -shift;
+    }
 
-# Debugger Files
-*.pdb
+    string result = text;
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-*.so.*
+    for (char& ch : result) {
+        if (ch >= 'A' && ch <= 'Z') {
+            ch = static_cast<char>((ch - 'A' + shift % 26 + 26) % 26 + 'A');
+        } else if (ch >= 'a' && ch <= 'z') {
+            ch = static_cast<char>((ch - 'a' + shift % 26 + 26) % 26 + 'a');
+        }
+    }
 
-# Fortran module files
-*.mod
-*.smod
+    return result;
+}
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+int main() {
+    cout << "--- Caesar Cipher CLI Tool ---\n";
 
-# Executables
-*.exe
-*.out
-*.app
+    string mode;
+    while (true) {
+        cout << "Choose mode (encrypt / decrypt): ";
+        cin >> mode;
 
-# Build directories
-build/
-Build/
-build-*/
+        if (mode == "encrypt" || mode == "decrypt") {
+            break;
+        }
 
-# CMake generated files
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-install_manifest.txt
-compile_commands.json
+        cout << "Invalid choice. Please type 'encrypt' or 'decrypt'.\n";
+    }
 
-# Temporary files
-*.tmp
-*.log
-*.bak
-*.swp
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-# vcpkg
-vcpkg_installed/
+    string message;
+    cout << "Enter your message: ";
+    getline(cin, message);
 
-# debug information files
-*.dwo
+    int shift;
+    while (true) {
+        cout << "Enter shift value (integer, e.g., 3): ";
+        if (cin >> shift) {
+            break;
+        }
 
-# test output & cache
-Testing/
-.cache/
+        cout << "Please enter a valid whole number.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    string processedText = caesarCipher(message, shift, mode);
+
+    cout << "\nResulting " << mode << "ed text:\n";
+    cout << processedText << '\n';
+
+    return 0;
+}
